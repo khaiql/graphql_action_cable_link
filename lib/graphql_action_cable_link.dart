@@ -14,10 +14,8 @@ enum ConnectionState {
   ConnectionLost,
 }
 
-/// Resolve the authentication header to be sent along of the request
-/// The hash key is header's name and value is header's value
-typedef GetAuthenticationHeaderFunction = FutureOr<Map<String, String>>
-    Function();
+/// A function that returns the token for authentication
+typedef GetAuthToken = FutureOr<String> Function();
 
 class _ActionCableEvent {
   _ActionCableEvent({
@@ -29,14 +27,35 @@ class _ActionCableEvent {
   final ConnectionState state;
 }
 
-/// Create a new Link that connects to Rails ActionCable web socket
+/// Create a new Link for Graphql subscription that is backed by Rails ActionCable websocket
+/// Example:
+/// ```dart
+/// final cableLink = ActionCableLink(
+///    webSocketUri,
+///    getAuthHeaderFunc: getAuthHeader,
+/// );
+///
+/// final httpLink = HttpLink(uri);
+///
+/// final link = Link.split(
+///    (request) => request.issubscription,
+///    cableLink,
+///    httpLink,
+/// );
+///
+/// final graphqlClient = GraphQLClient(
+///    cache: GraphQLCache(),
+///    link: link,
+/// );
+/// ```
 class ActionCableLink extends Link {
   ActionCableLink(
     this.url, {
     this.channelName = 'GraphqlChannel',
+    this.authHeaderKey = 'Authorization',
     this.action = 'execute',
     this.defaultHeaders = const {},
-    this.getAuthHeaderFunc,
+    this.getAuthTokenFunc,
     this.retryDuration = const Duration(seconds: 2),
   });
 
@@ -45,6 +64,9 @@ class ActionCableLink extends Link {
 
   /// name of the ActionCable channel
   final String channelName;
+
+  /// name of the authentication header
+  final String authHeaderKey;
 
   /// default headers to be sent to the Rails server
   final Map<String, String> defaultHeaders;
@@ -61,7 +83,7 @@ class ActionCableLink extends Link {
   /// A function that returns authentication header.
   /// If not null, this method will be invoked before sending the request,
   /// Then merge with [defaultHeaders] to send to the server
-  final GetAuthenticationHeaderFunction? getAuthHeaderFunc;
+  final GetAuthToken? getAuthTokenFunc;
 
   ActionCable? _cable;
   Timer? _retryTimer;
@@ -155,11 +177,9 @@ class ActionCableLink extends Link {
 
   Future<Map<String, String>> _getHeaders() async {
     final headers = defaultHeaders;
-    if (getAuthHeaderFunc != null) {
-      final authHeader = await getAuthHeaderFunc!();
-      if (authHeader.isNotEmpty) {
-        headers.addAll(authHeader);
-      }
+    if (getAuthTokenFunc != null) {
+      final token = await getAuthTokenFunc!();
+      headers[authHeaderKey] = token;
     }
 
     return headers;
