@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:action_cable/action_cable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:gql_exec/gql_exec.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
@@ -101,7 +100,7 @@ class ActionCableLink extends Link {
         case ConnectionState.Disconnected:
         case ConnectionState.CannotConnect:
         case ConnectionState.ConnectionLost:
-          debugPrint('connection lost, attempting to reconnection in 2 second');
+          print('connection lost, attempting to reconnection in 2 second');
 
           _retryTimer ??= Timer(
             retryDuration,
@@ -120,7 +119,7 @@ class ActionCableLink extends Link {
     _connect(request, connectionStateController);
 
     response.onCancel = () {
-      debugPrint('unsubscribe and disconnect from $channelName');
+      print('unsubscribe and disconnect from $channelName');
       _cable?.disconnect();
       _retryTimer?.cancel();
       connectionStateController.close();
@@ -151,14 +150,14 @@ class ActionCableLink extends Link {
       url,
       headers: await _getHeaders(),
       onConnected: () {
-        debugPrint('Connected to websocket');
+        print('Connected to websocket');
 
         connectStateController.add(
           _ActionCableEvent(request: request, state: ConnectionState.Connected),
         );
       },
       onCannotConnect: () {
-        debugPrint('Cannot connect to websocket');
+        print('Cannot connect to websocket');
 
         connectStateController.add(
           _ActionCableEvent(
@@ -166,7 +165,7 @@ class ActionCableLink extends Link {
         );
       },
       onConnectionLost: () {
-        debugPrint('Connection has been lost');
+        print('Connection has been lost');
         connectStateController.add(
           _ActionCableEvent(
               request: request, state: ConnectionState.ConnectionLost),
