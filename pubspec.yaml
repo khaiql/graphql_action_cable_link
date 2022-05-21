@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   graphql_flutter: ^5.0.0
-  gql_exec: ^0.3.0
+  gql_exec: ^0.4.0
   action_cable: ^1.2.0
 
 dev_dependencies:

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:action_cable/action_cable.dart';
-import 'package:gql_exec/gql_exec.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 enum ConnectionState {
