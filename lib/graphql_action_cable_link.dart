@@ -15,6 +15,9 @@ enum ConnectionState {
 /// A function that returns the token for authentication
 typedef GetAuthToken = FutureOr<String> Function();
 
+/// A function that returns params to be sent through initial connection messages
+typedef GetChannelParams = FutureOr<Map<dynamic, dynamic>> Function();
+
 class _ActionCableEvent {
   _ActionCableEvent({
     required this.state,
@@ -54,6 +57,7 @@ class ActionCableLink extends Link {
     this.action = 'execute',
     this.defaultHeaders = const {},
     this.getAuthTokenFunc,
+    this.getChannelParamsFunc,
     this.retryDuration = const Duration(seconds: 2),
   });
 
@@ -82,6 +86,11 @@ class ActionCableLink extends Link {
   /// If not null, this method will be invoked before sending the request,
   /// Then merge with [defaultHeaders] to send to the server
   final GetAuthToken? getAuthTokenFunc;
+
+  /// A function that returns additional channel params to be sent on connection
+  /// This function will be invoked both with the cable!.subscribe and cable!.performAction calls.
+  /// The latter gets called after subscribed the target channel (GraphqlChannel by default).
+  final GetChannelParams? getChannelParamsFunc;
 
   ActionCable? _cable;
   Timer? _retryTimer;
@@ -127,13 +136,15 @@ class ActionCableLink extends Link {
     yield* response.stream;
   }
 
-  void _subscribed(Request request, StreamController<Response> response) {
+  void _subscribed(Request request, StreamController<Response> response) async {
     _cable!.subscribe(
       channelName,
-      onSubscribed: () {
+      channelParams: await getChannelParamsFunc?.call(),
+      onSubscribed: () async {
         _cable!.performAction(
           channelName,
           action: action,
+          channelParams: await getChannelParamsFunc?.call(),
           actionParams: serializer.serializeRequest(request),
         );
       },
