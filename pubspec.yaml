@@ -1,6 +1,6 @@
 name: graphql_action_cable_link
 description: A Link for GraphQL Subscription backed by Rails ActionCable WebSocket server (graphql-ruby.org)
-version: 0.1.1-nullsafety
+version: 0.1.1
 homepage: https://github.com/khaiql/graphql_action_cable_link
 
 environment:

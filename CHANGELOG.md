@@ -1,4 +1,4 @@
-## 0.1.1-nullsafety
+## 0.1.1
 
 - Allow to pass additional channel params on connection. Introduced `getChannelParamsFunc`.
 - Add support for Dart SDK < 4.0.0
