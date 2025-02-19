@@ -156,7 +156,7 @@ class ActionCableLink extends Link {
 
   void _connect(Request request,
       StreamController<_ActionCableEvent> connectStateController) async {
-    _cable = ActionCable.Connect(
+    _cable = ActionCable.connect(
       url,
       headers: await _getHeaders(),
       onConnected: () {
