@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   graphql_flutter: ^5.0.0
-  gql_exec: ^0.4.0
+  gql_exec: ^1.1.1-alpha+1699813812660
   action_cable: ^1.2.0
 
 dev_dependencies:
@@ -23,7 +23,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
-
+  {}
   # To add assets to your package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
