@@ -1,3 +1,7 @@
+## 0.1.3
+
+- **fix**: the `.Connect` method renamed to `.connect` in the `action_cable` package.
+
 ## 0.1.1
 
 - Allow to pass additional channel params on connection. Introduced `getChannelParamsFunc`.
